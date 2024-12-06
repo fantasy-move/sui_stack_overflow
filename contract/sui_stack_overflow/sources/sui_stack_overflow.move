@@ -2,9 +2,11 @@
 /// Module: sui_stack_overflow
 module sui_stack_overflow::sui_stack_overflow;
 
+use std::address;
 use std::string::String;
 // use sui::coin;
 use sui::sui::SUI;
+use sui::transfer;
 // use wal::wal::WAL;
 use sui::table;
 use sui::table::Table;
@@ -53,7 +55,7 @@ public entry fun create_stack_overflow(ctx: &mut TxContext){
 }
 
 public entry fun regist_blob(stack_overflow: &mut StackOverflow, blob_id: String, ctx: &mut TxContext){
-    assert!(exist_blob(stack_overflow, blob_id), EBlobAlreadyExists);
+    assert!(!exist_blob(stack_overflow, blob_id), EBlobAlreadyExists);
     table::add(&mut stack_overflow.blob_map, blob_id, sender(ctx))
 }
 
@@ -61,24 +63,29 @@ public fun exist_blob(stack_overflow: &StackOverflow, blob_id: String): bool {
     table::contains(&stack_overflow.blob_map, blob_id)
 }
 
-public entry fun rewordSui(stack_overflow: &mut StackOverflow,blob_id: String, coin_in: &mut Coin<SUI>, ctx: &mut TxContext){
+public entry fun rewordSui(stack_overflow: &mut StackOverflow,blob_id: String, coin_in:&mut Coin<SUI>, ctx: &mut TxContext){
     // 1.blob must in the blob_map of stack_overflow
-    assert!(!exist_blob(stack_overflow, blob_id), EBlobAlreadyExists);
+    assert!(exist_blob(stack_overflow, blob_id), EBlobNotExits);
 
     // 2. transfer coin to
     //  2.1 split coin for pay fee
     let total_amount = coin_in.value();
     let fee_amount = get_fee(total_amount, stack_overflow.dao_fee);
-    let fee_coin:  Coin<SUI> = coin::split( coin_in, fee_amount, ctx);
+    let fee_coin:  Coin<SUI> = coin::split(coin_in, fee_amount, ctx);
 
     stack_overflow.fee_sui.join(coin::into_balance(fee_coin));
-
+    let owner_address =  table::borrow(&mut stack_overflow.blob_map, blob_id);
+    // Transfer the remaining coin to the owner address
+    let left_coin = coin::split(coin_in, total_amount - fee_amount, ctx);
+    transfer::public_transfer(left_coin, *owner_address);
 }
-
-/// get fee from amount
+    // transfer(*coin_in, *owner_address);
+    /// get fee from amount
 public fun get_dao_fee(amount: u64, fee: u64): u64{
     ((fee as u128) * (amount as u128) / (get_fee_base_of_percentage() as u128) as u64)
 }
+
+
 
 
 
