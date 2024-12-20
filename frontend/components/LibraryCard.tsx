@@ -1,4 +1,4 @@
-import { Library } from '@/contracts/gallery'
+import { BlobInfo } from '@/contracts/gallery'
 import {
   Card,
   CardContent,
@@ -8,18 +8,18 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Users, FileText, User } from 'lucide-react'
+import { FileText, User } from 'lucide-react'
 
 interface LibraryCardProps {
-  library: Library
-  onViewDetails: (id: string) => void;
+  library: BlobInfo
+  onViewDetails: (blobInfo: BlobInfo) => void;
 }
 
 export function LibraryCard({ library, onViewDetails }: LibraryCardProps) {
   return (
     <Card className="hover:shadow-lg transition-shadow max-w-sm">
       <CardHeader>
-        <CardTitle className="text-xl font-bold">{library.name}</CardTitle>
+        <CardTitle className="text-xl font-bold">{library.title}</CardTitle>
         <CardDescription className="truncate">ID: {library.id.id}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -32,18 +32,18 @@ export function LibraryCard({ library, onViewDetails }: LibraryCardProps) {
         <div className="flex items-center gap-2">
           <FileText className="h-4 w-4 text-gray-500" />
           <span className="text-sm text-gray-600">
-            Blobs: {library.blobs.length}
+            Sui Reword: {library.rewordSuiAmount}
           </span>
         </div>
-        <div className="flex items-center gap-2">
+        {/* <div className="flex items-center gap-2">
           <Users className="h-4 w-4 text-gray-500" />
           <span className="text-sm text-gray-600">
             Members: {library.members.length}
           </span>
-        </div>
+        </div> */}
       </CardContent>
       <CardFooter className="flex justify-end gap-2">
-        <Button variant="outline" size="sm" onClick={() => onViewDetails(library.b36addr)}>
+        <Button variant="outline" size="sm" onClick={() => onViewDetails(library)}>
           View Details
         </Button>
       </CardFooter>

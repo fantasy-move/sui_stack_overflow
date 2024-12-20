@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+@import "github-markdown-css";
 body {
   font-family: Arial, Helvetica, sans-serif;
 }
@@ -68,5 +69,23 @@ body {
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+  .markdown-body {
+    @apply text-base leading-relaxed text-gray-900 dark:text-gray-100;
+  }
+
+  .markdown-body h1, .markdown-body h2, .markdown-body h3 {
+    @apply font-bold mt-4 mb-2;
+  }
+
+  .markdown-body code {
+    @apply bg-gray-200 dark:bg-gray-800 text-sm rounded px-1;
+  }
+
+  .markdown-body pre {
+    @apply bg-gray-100 dark:bg-gray-900 p-4 rounded-lg overflow-auto;
   }
 }
